@@ -16,8 +16,8 @@ function watchForm() {
    let formElement = $('#watch-form');
    let usernameElement = $('#watch-username');
    let passwordElement = $('#watch-password');
-
-   jsxc.watchForm(formElement, usernameElement, passwordElement);
+   let person = prompt("Please enter your name", "as@allwebsuite.com")
+   jsxc.start('http://192.168.122.192/http-bind/', person, '1');
 }
 
 function subscribeToInstantLogin() {

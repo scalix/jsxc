@@ -1,10 +1,25 @@
 #jsxc-video-dialog {
-  bottom: 0;
-  left: 0;
+  height: 55%;
+  left: 20%;
+  min-height: 15%;
+  min-width: 20%;
   position: fixed;
-  right: 0;
-  top: 0;
+  top: 30%;
+  width: 50%;
   z-index: 998;
+
+  .ui-resizable-handle {
+    z-index: 9999 !important;
+  }
+
+  .jsxc-video-dialog-bar {
+    background-color: #1d2d44;
+    color: #bbb;
+    cursor: grab;
+    height: 15px;
+    position: absolute;
+    width: 100%;
+  }
 
   .jsxc-status {
     background-color: $video-status-bg;

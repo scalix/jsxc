@@ -8,6 +8,7 @@
    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
 
    <link href="css/bootstrap.min.css" media="all" rel="stylesheet" type="text/css" />
+   <link href="css/jquery-ui.min.css" media="all" rel="stylesheet" type="text/css" />
 
    <!-- require:dependencies -->
    <link href="../dist/styles/jsxc.bundle.css" media="all" rel="stylesheet" type="text/css" />
@@ -113,7 +114,7 @@ function getSettings(username, password) {
   return Promise.resolve({
     xmpp: {
       url: '/http-bind/',
-      domain: 'localhost',
+
     }
   });
 }
@@ -209,6 +210,11 @@ jsxc.start(url, jid, sid, rid);</pre>
 
    <script src="js/example.js"></script>
    <script src="js/helper.js"></script>
+<style>
+
+
+
+</style>
 </body>
 
 </html>

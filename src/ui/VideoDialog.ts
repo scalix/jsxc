@@ -45,9 +45,7 @@ export class VideoDialog {
 
       session.getPeer().addSystemMessage(msg);
 
-      let videoWindow = new VideoWindow(this, session);
-
-      this.videoWindows[session.getId()] = videoWindow;
+      this.videoWindows[session.getId()] = new VideoWindow(this, session);
    }
 
    public showCallDialog(session: JingleMediaSession) {
@@ -92,6 +90,12 @@ export class VideoDialog {
 
    public showVideoWindow(localStream?: MediaStream) {
       this.dom.appendTo('body');
+      (<any> this.dom)
+         .resizable()
+         .draggable({
+            handle: '.jsxc-video-dialog-bar',
+            containment: 'window',
+         });
 
       let localVideoElement = this.dom.find('.jsxc-local-video');
       let localCameraControl = this.dom.find('.jsxc-video');
@@ -190,7 +194,7 @@ export class VideoDialog {
 
    //@REVIEW still used?
    public setStatus(txt, d?) {
-      let status = $('.jsxc_webrtc .jsxc_status');
+      let status =  $('.jsxc_webrtc .jsxc_status');
       let duration = (typeof d === 'undefined' || d === null) ? 4000 : d;
 
       Log.debug('[Webrtc]', txt);

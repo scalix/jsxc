@@ -1,12 +1,12 @@
 import Log from './util/Log'
 import Translation from './util/Translation'
-import Overlay from './ui/Overlay'
+//import Overlay from './ui/Overlay'
 import * as getScreenMedia from 'getscreenmedia'
 
 export default class UserMedia {
    public static async request(um = ['video', 'audio']): Promise<MediaStream> {
-      let overlay = new Overlay();
-      overlay.open();
+      /*let overlay = new Overlay();
+      overlay.open();*/
 
       um.forEach(element => {
          if (['video', 'audio', 'screen'].indexOf(element) < 0) {
@@ -25,12 +25,12 @@ export default class UserMedia {
                .then(UserMedia.getUserMedia);
          }
       } catch (err) {
-         overlay.close();
+         ///overlay.close();
 
          throw UserMedia.onMediaFailure(err);
       }
 
-      overlay.close();
+      ///overlay.close();
 
       return stream;
    }
