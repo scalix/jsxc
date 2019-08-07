@@ -149,11 +149,6 @@ export class VideoDialog {
 
       if ($.support.fullscreen) {
          this.dom.find('.jsxc-fullscreen').click(() => {
-            $(document).one('disabled.fullscreen', function() {
-               // Reset position of localvideo
-               //localVideoElement.removeAttr('style');
-            });
-
             (<any> this.dom).fullscreen();
          });
       } else {
@@ -194,7 +189,7 @@ export class VideoDialog {
 
    //@REVIEW still used?
    public setStatus(txt, d?) {
-      let status =  $('.jsxc_webrtc .jsxc_status');
+      let status = $('.jsxc_webrtc .jsxc_status');
       let duration = (typeof d === 'undefined' || d === null) ? 4000 : d;
 
       Log.debug('[Webrtc]', txt);
