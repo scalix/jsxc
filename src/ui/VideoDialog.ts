@@ -291,6 +291,10 @@ export class VideoDialog {
    }
 
    private static stopStream(stream) {
+      if (!stream) {
+         Log.warn('Could not stop stream. Stream is empty');
+         return;
+      }
       if (typeof stream.getTracks === 'function') {
          let tracks = stream.getTracks();
          tracks.forEach(function(track) {
