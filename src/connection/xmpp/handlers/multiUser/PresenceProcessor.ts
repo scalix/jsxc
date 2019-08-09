@@ -63,6 +63,10 @@ export default class MultiUserPresenceProcessor {
       } else {
          this.multiUserContact.removeMember(this.nickname);
 
+         if (this.nickname === 'focus') {
+            return;
+         }
+
          if (this.codes.length === 1 && this.codes.indexOf('110') > -1) {
             this.inform(':door:' + Translation.t('You_left_the_building'));
          } else if (this.codes.length === 0) {
@@ -84,7 +88,7 @@ export default class MultiUserPresenceProcessor {
 
       let isNew = this.multiUserContact.addMember(this.nickname, affiliation, role, jid);
 
-      if (isNew && this.multiUserContact.isMemberListComplete()) {
+      if (isNew && this.multiUserContact.isMemberListComplete() && this.nickname !== 'focus') {
          this.inform(':footprints: ' + Translation.t('entered_the_room', {
             nickname: this.nickname,
             escapeInterpolation: true
