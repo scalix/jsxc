@@ -12,6 +12,7 @@ import ChatWindow from '@ui/ChatWindow';
 import { ContactType, IContact } from '@src/Contact.interface';
 import Translation from '@util/Translation';
 import VerificationDialog from '@ui/dialogs/verification';
+import { DIRECTION } from '@src/Message.interface';
 
 const WHITESPACE_TAG = '\x20\x09\x20\x20\x09\x09\x09\x09\x20\x09\x20\x09\x20\x09\x20\x20';
 
@@ -37,8 +38,16 @@ export default class OTRPlugin extends EncryptionPlugin {
    private sessions = {};
    private key: IDSA;
 
-   public static getName(): string {
+   public static getId(): string {
       return 'otr';
+   }
+
+   public static getName(): string {
+      return 'OTR';
+   }
+
+   public static getDescription(): string {
+      return Translation.t('setting-otr-enable');
    }
 
    constructor(pluginAPI: PluginAPI) {
@@ -69,6 +78,8 @@ export default class OTRPlugin extends EncryptionPlugin {
             this.updateMenuEntry(contact, menuEntry);
          })
       });
+
+      pluginAPI.registerTextFormatter(this.textFormatter);
    }
 
    public toggleTransfer(contact: Contact): Promise<void> {
@@ -81,6 +92,15 @@ export default class OTRPlugin extends EncryptionPlugin {
             return session.goEncrypted();
          }
       });
+   }
+
+   private textFormatter = (plaintext: string, direction: DIRECTION, contact: Contact) => {
+      // hide unprocessed otr messages
+      if (plaintext.match(/^\?OTR([:,|?]|[?v0-9x]+)/)) {
+         plaintext = '<i title="' + plaintext + '">' + Translation.t('Unreadable_OTR_message') + '</i>';
+      }
+
+      return plaintext;
    }
 
    private updateMenuEntry(contact: IContact, menuEntry: JQuery) {

@@ -75,6 +75,7 @@ export default class Contact implements IIdentifiable, IContact {
          status: '',
          subscription: ContactSubscription.NONE,
          resources: {},
+         groups: [],
          type: ContactType.CHAT,
          rnd: Math.random() // force storage event
       }
@@ -134,16 +135,16 @@ export default class Contact implements IIdentifiable, IContact {
    public setPresence(resource: string, presence: Presence) {
       Log.debug('set presence for ' + this.jid.bare + ' / ' + resource, presence);
 
-      let resources = this.data.get('resources') || {};
+      if (resource) {
+         let resources = this.data.get('resources') || {};
 
-      if (presence === Presence.offline) {
-         if (resource) {
+         if (presence === Presence.offline) {
             delete resources[resource];
          } else {
-            resources = {};
+            resources[resource] = presence;
          }
-      } else if (resource) {
-         resources[resource] = presence;
+
+         this.data.set('resources', resources);
       }
 
       presence = this.getHighestPresence();
@@ -310,6 +311,14 @@ export default class Contact implements IIdentifiable, IContact {
 
    public setSubscription(subscription: ContactSubscription) {
       this.data.set('subscription', subscription);
+   }
+
+   public setGroups(groups: string[]) {
+      this.data.set('groups', groups);
+   }
+
+   public getGroups(): string[] {
+      return this.data.get('groups') || [];
    }
 
    public registerHook(property: string, func: (newValue: any, oldValue: any) => void) {

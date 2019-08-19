@@ -6,6 +6,7 @@ import FormWatcher, { SettingsCallback } from '../../FormWatcher'
 import { disconnect } from './disconnect';
 import Translation from '@util/Translation';
 import loginBox from '@ui/dialogs/loginBox';
+import Account from './Account';
 import {IOptionData} from '@src/Options';
 
 export { disconnect };
@@ -72,4 +73,8 @@ export function translate(str: string, param) {
 
 export function showLoginBox(username?: string) {
    loginBox(username);
+}
+
+export function getAccount(uid: string) {
+   return new Account(uid);
 }

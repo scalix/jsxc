@@ -52,7 +52,7 @@ export default class ChatWindowMessage {
       return nextMessage;
    }
 
-   private generateElement() {
+   private async generateElement() {
       let template = chatWindowMessageTemplate({
          id: this.message.getCssId(),
          direction: this.message.getDirectionString()
@@ -60,7 +60,7 @@ export default class ChatWindowMessage {
 
       this.element = $(template);
 
-      let bodyElement = $(this.message.getProcessedBody());
+      let bodyElement = $(await this.message.getProcessedBody());
 
       LinkHandlerGeo.get().detect(bodyElement);
 
@@ -169,7 +169,7 @@ export default class ChatWindowMessage {
       avatarElement.addClass('jsxc-avatar');
       avatarElement.attr('title', title);
 
-      this.element.prepend(avatarElement)
+      this.element.prepend(avatarElement);
       this.element.attr('data-name', sender.name);
 
       let nextMessage = this.getNextMessage();
