@@ -21,15 +21,94 @@ let jsxc = new JSXC({
    }
 });
 
+let JSXC_MIN_VERSION = '4.0.0';
+let JSXC_MAX_VERSION = '4.9999.0';
+
+class GroupMeetingCall extends JSXC.AbstractPlugin {
+
+   options;
+
+   constructor(pluginAPI) {
+      super(JSXC_MIN_VERSION, JSXC_MAX_VERSION, pluginAPI);
+
+      this.options = {
+         ...GroupMeetingCall.defaultOptions(),
+         ...(pluginAPI.getOption(GroupMeetingCall.getId()) || {})
+      };
+
+      alert(this.getMeetUrl());
+      if (!this.getMeetUrl()) {
+         return;
+      }
+
+      pluginAPI.registerChatWindowInitializedHook((chatWindow) => {
+         if (!chatWindow.getContact().isGroupChat()) {
+            return;
+         }
+         chatWindow.addActionEntry('jsxc-audio-group',  (e) => {
+            if (e) {
+               e.stopImmediatePropagation();
+               e.preventDefault();
+            }
+            this.startCall(chatWindow, true);
+         });
+         chatWindow.addActionEntry('jsxc-video-group',  (e) => {
+            if (e) {
+               e.stopImmediatePropagation();
+               e.preventDefault();
+            }
+            this.startCall(chatWindow);
+         });
+      });
+   }
+
+   getMeetUrl() {
+      return this.options.url;
+   }
+
+   static getName() {
+      return 'GroupMeetingCall';
+   }
+
+   static getId() {
+      return this.getName().toLowerCase();
+   }
+
+   static defaultOptions() {
+      return {
+         'url': 'https://meet.jitsi.si/'
+      }
+   }
+
+   startCall(chatWindow, audioOnly=false) {
+      let jid = chatWindow.getContact().getJid().node + '-sx-' + (new Date()).getTime();
+      let url = this.getMeetUrl();
+
+      if (!url.endsWith('/')) {
+         url += '/';
+      }
+
+      let a = document.createElement('a');
+      a.href = url + jid + (audioOnly ? '#config.startAudioOnly=true' : '');
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.click();
+   }
+}
+
+
 subscribeToInstantLogin();
 watchForm();
 watchLogoutButton();
+
 
 function watchForm() {
    let formElement = $('#watch-form');
    let usernameElement = $('#watch-username');
    let passwordElement = $('#watch-password');
-   let person = prompt("Please enter your name", "as@allwebsuite.com")
+   let person = prompt("Please enter your name", "as@allwebsuite.com");
+   var groupCallPluginOptions = {'url': 'meet.allwebsuite.com'};
+   jsxc.addPlugin(GroupMeetingCall, groupCallPluginOptions);
    jsxc.start('http://192.168.122.192/http-bind/', person, '1');
 }
 
