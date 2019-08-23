@@ -6,11 +6,24 @@ let jsxc = new JSXC({
             domain: $('#xmpp-domain').val(),
          }
       });
+   },
+   connectionCallback: (jid, status) => {
+      const CONNECTED = 5;
+      const ATTACHED = 8;
+
+      if (status === CONNECTED || status === ATTACHED) {
+         $('.logout').show();
+         $('.submit').hide();
+      } else {
+         $('.logout').hide();
+         $('.submit').show();
+      }
    }
 });
 
 subscribeToInstantLogin();
 watchForm();
+watchLogoutButton();
 
 function watchForm() {
    let formElement = $('#watch-form');
@@ -18,6 +31,12 @@ function watchForm() {
    let passwordElement = $('#watch-password');
    let person = prompt("Please enter your name", "as@allwebsuite.com")
    jsxc.start('http://192.168.122.192/http-bind/', person, '1');
+}
+
+function watchLogoutButton() {
+   let buttonElements = $('.logout');
+
+   jsxc.watchLogoutClick(buttonElements);
 }
 
 function subscribeToInstantLogin() {
