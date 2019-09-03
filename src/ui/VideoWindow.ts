@@ -37,6 +37,7 @@ export default class VideoWindow {
       if (state === 'connected') {
          this.wrapperElement.removeClass('jsxc-establishing');
          this.wrapperElement.addClass('jsxc-ice-connected');
+
          let remoteStreams = this.session.getRemoteStreams();
 
          if (remoteStreams.length > 0) {
@@ -65,6 +66,10 @@ export default class VideoWindow {
    }
 
    private addStream = (stream: MediaStream) => {
+      if (this.videoElement) {
+         return;
+      }
+
       //@REVIEW can a session contain multiple streams?
       Log.debug('Remote stream for session ' + this.session.getId() + ' added.');
 
@@ -74,12 +79,8 @@ export default class VideoWindow {
       this.videoDialog.setStatus(isVideoDevice ? 'Use remote video device.' : 'No remote video device');
       this.videoDialog.setStatus(isAudioDevice ? 'Use remote audio device.' : 'No remote audio device');
 
-      this.videoElement = this.wrapperElement.find('video');
-
-      if (this.videoElement.length === 0) {
-         this.videoElement = $('<video autoplay></video>');
-         this.videoElement.appendTo(this.wrapperElement);
-      }
+      this.videoElement = $('<video autoplay></video>');
+      this.videoElement.appendTo(this.wrapperElement);
 
       VideoDialog.attachMediaStream(this.videoElement, stream);
 
@@ -96,5 +97,8 @@ export default class VideoWindow {
       Log.debug('Remote stream for ' + this.session.getId() + ' removed.');
 
       VideoDialog.detachMediaStream(this.videoElement);
+
+      this.videoElement.remove();
+      this.videoElement = undefined;
    }
 }

@@ -1,4 +1,12 @@
-<!-- If you want to submit a feature request, please remove the template. -->
+---
+name: Bug report
+about: Create a report to help us improve
+title: ''
+labels: ''
+assignees: ''
+
+---
+
 ### Expected behavior
 
 ### Actual behavior
