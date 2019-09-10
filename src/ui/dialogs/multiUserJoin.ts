@@ -120,7 +120,7 @@ class MultiUserJoinDialog {
                if ($(stanza).find('service-unavailable').length > 0) {
                   Log.warn(`Service unavailable for ${from}`, stanza);
                } else {
-                  Log.warn(`Could not load get DiscoInfo for ${from}`, stanza);
+                  Log.error(`Could not load get DiscoInfo for ${from}`, stanza);
                   throw stanza;
                }
             });
