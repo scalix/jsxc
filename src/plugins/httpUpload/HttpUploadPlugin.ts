@@ -9,6 +9,8 @@ import HttpUploadService from './HttpUploadService'
 import { IConnection } from '../../connection/Connection.interface'
 import { $iq } from '../../vendor/Strophe'
 import Translation from '../../util/Translation';
+import { IContact } from '@src/Contact.interface';
+import { IMessage } from '@src/Message.interface';
 
 /**
  * XEP-0363: HTTP File Upload
@@ -42,14 +44,17 @@ export default class HttpUploadPlugin extends AbstractPlugin {
 
       pluginAPI.addPreSendMessageProcessor(this.preSendMessageProcessor, 20);
 
-      pluginAPI.addPreSendMessageStanzaProcessor(this.addBitsOfBinary)
+      pluginAPI.addPreSendMessageStanzaProcessor(this.addBitsOfBinary);
+
+      pluginAPI.addAfterReceiveMessageProcessor(this.extractAttachmentFromStanza);
+      pluginAPI.addAfterReceiveGroupMessageProcessor(this.extractAttachmentFromStanza);
 
       let connection = pluginAPI.getConnection();
 
       connection.registerHandler(this.onBitsOfBinary, 'urn:xmpp:bob', 'iq');
    }
 
-   private preSendMessageProcessor = (contact: Contact, message: Message) => {
+   private preSendMessageProcessor = (contact: Contact, message: Message): Promise<[Contact, Message]> => {
       if (!message.hasAttachment()) {
          return Promise.resolve([contact, message]);
       }
@@ -154,7 +159,9 @@ export default class HttpUploadPlugin extends AbstractPlugin {
 
       html.append($('<p>').append(linkElement));
       //@TODO html !== empty ???
-      html.append($('<p>').text(plaintext));
+      if (plaintext) {
+         html.append($('<p>').text(plaintext));
+      }
 
       message.setHtmlMessage(html.html());
    }
@@ -204,4 +211,39 @@ export default class HttpUploadPlugin extends AbstractPlugin {
 
       return Promise.resolve([message, xmlStanza]);
    }
+
+   private extractAttachmentFromStanza = (contact: IContact, message: IMessage, stanza: Element): Promise<[IContact, IMessage, Element]> => {
+      let element = $(stanza);
+      let bodyElement = element.find('html body[xmlns="' + Strophe.NS.XHTML + '"]').first();
+      let dataElement = element.find('data[xmlns="urn:xmpp:bob"]');
+
+      if (bodyElement.length && dataElement.length === 1) {
+         let cid = dataElement.attr('cid');
+         let mimeType = dataElement.attr('type');
+
+         if (!/^[a-z]+\/[a-z0-9.\-+]+$/.test(mimeType)) {
+            return Promise.resolve([contact, message, stanza]);
+         }
+
+         let linkElement = bodyElement.find('a');
+         let imageElement = linkElement.find('img[src^="cid:"]');
+
+         if (imageElement.length === 1 && ('cid:' + cid) === imageElement.attr('src')) {
+            let url = linkElement.attr('href');
+            let name = imageElement.attr('alt');
+            let thumbnailData = dataElement.text();
+
+            if (/^data:image\/(jpeg|jpg|gif|png|svg);base64,[/+=a-z0-9]+$/i.test(thumbnailData) && /^https?:\/\//.test(url)) {
+               let attachment = new Attachment(name, mimeType, url);
+               attachment.setThumbnailData(thumbnailData);
+               attachment.setData(url);
+
+               message.setAttachment(attachment);
+               message.setPlaintextMessage(bodyElement.text());
+            }
+         }
+      }
+
+      return Promise.resolve([contact, message, stanza]);
+   };
 }
