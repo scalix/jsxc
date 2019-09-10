@@ -121,7 +121,7 @@ class MultiUserJoinDialog {
                   Log.warn(`Service unavailable for ${from}`, stanza);
                } else {
                   Log.warn(`Could not load get DiscoInfo for ${from}`, stanza);
-                  return Promise.reject(stanza);
+                  throw stanza;
                }
             });
 
