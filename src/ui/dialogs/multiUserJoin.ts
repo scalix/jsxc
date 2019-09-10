@@ -115,6 +115,14 @@ class MultiUserJoinDialog {
                return discoInfoRepository.hasFeature(discoInfo, 'http://jabber.org/protocol/muc');
             }).then((hasFeature) => {
                return hasFeature ? jid : undefined;
+            }).catch((stanza) => {
+               const from = $(stanza).attr('from') || '';
+               if ($(stanza).find('service-unavailable').length > 0) {
+                  Log.warn(`Service unavailable for ${from}`, stanza);
+               } else {
+                  Log.warn(`Could not load get DiscoInfo for ${from}`, stanza);
+                  return Promise.reject(stanza);
+               }
             });
 
             promises.push(promise);

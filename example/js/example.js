@@ -1,4 +1,9 @@
 let jsxc = new JSXC({
+   RTCPeerConfig: {
+      iceServers: [
+          {"urls":
+                 ["stun:stun.scalix.com", "stun:stun2.scalix.com", "turn:stun.scalix.com"], "username": "demobr","credential": "demobrPswd", "credentialType": "password"}]
+   },
    loadConnectionOptions: (username, password) => {
       return Promise.resolve({
          xmpp: {
