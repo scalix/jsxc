@@ -36,7 +36,6 @@ class GroupMeetingCall extends JSXC.AbstractPlugin {
          ...(pluginAPI.getOption(GroupMeetingCall.getId()) || {})
       };
 
-      alert(this.getMeetUrl());
       if (!this.getMeetUrl()) {
          return;
       }
